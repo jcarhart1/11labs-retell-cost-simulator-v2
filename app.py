@@ -392,6 +392,14 @@ with tab1:
         "Scheduled/month = patients/month x scheduling conversion rate (default 18%, based on "
         "pilot data: 36 patients scheduled out of 199)."
     )
+    st.caption(
+        "**Retell infrastructure fee ($0.055/min):** This is Retell's core platform charge, "
+        "billed per minute of active call time regardless of which TTS provider you use. It covers "
+        "Retell's turn-taking model, orchestration engine, transcription (ASR), and telephony "
+        "infrastructure. It is separate from — and in addition to — any TTS cost (ElevenLabs, "
+        "Alt TTS, or a direct plan). Formula: total minutes/month x $0.055. For example, at "
+        "3,120 minutes/month: 3,120 x $0.055 = $171.60/month in Retell infra alone."
+    )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
