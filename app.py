@@ -400,6 +400,13 @@ with tab1:
         "Alt TTS, or a direct plan). Formula: total minutes/month x $0.055. For example, at "
         "3,120 minutes/month: 3,120 x $0.055 = $171.60/month in Retell infra alone."
     )
+    st.caption(
+        "**Cost per scheduled patient:** Monthly total cost / scheduled patients per month. "
+        "Scheduled patients = total patients x scheduling conversion rate (default 18%, based on "
+        "pilot data: 36 scheduled out of 199). This metric answers: 'What did it cost in TTS and "
+        "infrastructure to get one patient onto the schedule?' — making it a practical benchmark "
+        "for clinical and ops stakeholders evaluating cost-per-outcome rather than cost-per-minute."
+    )
 
 
 # ══════════════════════════════════════════════════════════════════════════════
