@@ -13,6 +13,7 @@ st.set_page_config(
 RETELL_INFRA  = 0.055
 EL_TTS_RATE   = 0.040
 ALT_TTS_RATE  = 0.015
+PRE_MAR23_RATE = 0.070   # $/min — legacy bundled rate (Retell + ElevenLabs, pre Mar 23)
 CHARS_PER_MIN = 750
 
 ELEVENLABS_PLANS = [
@@ -27,6 +28,8 @@ ELEVENLABS_PLANS = [
 COMPARE_PLANS = ["Creator", "Pro", "Scale", "Business"]
 
 PLAN_COLORS = {
+    "Retell + ElevenLabs (pre Mar 23)":  "#888780",
+    "Retell + ElevenLabs (post Mar 23)": "#378ADD",
     "Retell + ElevenLabs": "#378ADD",
     "Retell + Alt TTS":    "#1D9E75",
     "Creator":             "#534AB7",
@@ -189,27 +192,42 @@ with tab1:
     st.subheader("Retell-bundled TTS options")
     st.caption("Flat per-minute rates — no volume discount available.")
 
+    pre_mar23_cost = PRE_MAR23_RATE * base["minutes"]
+
     bundled = [
+        {
+            "label":    "Retell + ElevenLabs",
+            "sublabel": "Pre Mar 23 — legacy bundled pricing",
+            "cost":     pre_mar23_cost,
+            "breakdown": {
+                "Bundled voice engine (all-in)": pre_mar23_cost,
+            },
+            "legacy": True,
+        },
         {
             "label":    "Retell + ElevenLabs",
             "sublabel": "Current setup — post Mar 23 pricing",
             "cost":     base["retell_el"],
             "breakdown": base["breakdown"]["Retell + ElevenLabs"],
+            "legacy": False,
         },
         {
             "label":    "Retell + Alt TTS",
             "sublabel": "e.g. Cartesia, Fish Audio, OpenAI, Retell voices",
             "cost":     base["retell_alt"],
             "breakdown": base["breakdown"]["Retell + Alt TTS"],
+            "legacy": False,
         },
     ]
 
     bundled_cheapest = min(s["cost"] for s in bundled)
-    b_cols = st.columns(2)
+    b_cols = st.columns(3)
     for col, s in zip(b_cols, bundled):
         with col:
             with st.container(border=True):
-                if s["cost"] == bundled_cheapest:
+                if s.get("legacy"):
+                    st.warning("⏪ Pre Mar 23 baseline")
+                elif s["cost"] == bundled_cheapest:
                     st.success("✓ Lowest among bundled")
                 st.markdown(f"**{s['label']}**")
                 st.caption(s["sublabel"])
@@ -220,6 +238,9 @@ with tab1:
                 with st.expander("Breakdown"):
                     for k, v in s["breakdown"].items():
                         st.markdown(f"- {k}: **${v:,.2f}**")
+                if s.get("legacy"):
+                    delta = base["retell_el"] - pre_mar23_cost
+                    st.caption(f"Post Mar 23 ElevenLabs costs **${abs(delta):,.2f} {'more' if delta > 0 else 'less'}**/month vs. this baseline.")
 
     st.divider()
 
@@ -277,12 +298,12 @@ with tab1:
     st.subheader("Full comparison summary")
 
     all_scenarios = [
-                        ("Retell + ElevenLabs", base["retell_el"]),
-                        ("Retell + Alt TTS",    base["retell_alt"]),
+                        ("Retell + ElevenLabs (pre Mar 23)", pre_mar23_cost),
+                        ("Retell + ElevenLabs (post Mar 23)", base["retell_el"]),
+                        ("Retell + Alt TTS",                  base["retell_alt"]),
                     ] + [(n, base["plan_costs"][n]["total"]) for n in COMPARE_PLANS]
 
     summary_rows = []
-    overall_cheapest = min(cost for _, cost in all_scenarios)
     for label, cost in all_scenarios:
         cpp = cost / total_patients_input
         cps = cost / scheduled_per_month if scheduled_per_month else 0
@@ -292,7 +313,7 @@ with tab1:
             "Annual cost":        f"${cost*12:,.2f}",
             "Cost per patient":   f"${cpp:,.2f}",
             "Cost per scheduled": f"${cps:,.2f}",
-            "vs. Retell + EL":    f"${cost - base['retell_el']:+,.2f}",
+            "vs. pre Mar 23":     f"${cost - pre_mar23_cost:+,.2f}",
         })
     st.dataframe(pd.DataFrame(summary_rows), hide_index=True, use_container_width=True)
 
@@ -308,7 +329,11 @@ with tab1:
     st.subheader("6-month cost projection")
 
     month_labels = [f"Month {i+1}" for i in range(6)]
-    series = {"Retell + ElevenLabs": [], "Retell + Alt TTS": []}
+    series = {
+        "Retell + ElevenLabs (pre Mar 23)":  [],
+        "Retell + ElevenLabs (post Mar 23)": [],
+        "Retell + Alt TTS":                  [],
+    }
     for pname in COMPARE_PLANS:
         series[pname] = []
 
@@ -316,17 +341,27 @@ with tab1:
         g     = growth_pct * i / 5
         m, ch = minutes_for_calls(calls_per_day, avg_duration, agents, g)
         c     = compute_tts_costs(m, ch, enterprise_discount)
-        series["Retell + ElevenLabs"].append(round(c["retell_el"],  2))
+        series["Retell + ElevenLabs (pre Mar 23)"].append(round(PRE_MAR23_RATE * m, 2))
+        series["Retell + ElevenLabs (post Mar 23)"].append(round(c["retell_el"],  2))
         series["Retell + Alt TTS"].append(round(c["retell_alt"], 2))
         for pname in COMPARE_PLANS:
             series[pname].append(round(c["plan_costs"][pname]["total"], 2))
 
+    chart_colors = {
+        "Retell + ElevenLabs (pre Mar 23)":  "#888780",
+        "Retell + ElevenLabs (post Mar 23)": "#378ADD",
+        "Retell + Alt TTS":                  "#1D9E75",
+    }
+    chart_colors.update(PLAN_COLORS)
+
     fig = go.Figure()
     for label, values in series.items():
+        is_legacy = "pre Mar 23" in label
         fig.add_trace(go.Scatter(
             x=month_labels, y=values, name=label,
             mode="lines+markers",
-            line=dict(color=PLAN_COLORS.get(label, "#888780"), width=2),
+            line=dict(color=chart_colors.get(label, "#888780"), width=2,
+                      dash="dash" if is_legacy else "solid"),
             marker=dict(size=6),
         ))
     fig.update_layout(
