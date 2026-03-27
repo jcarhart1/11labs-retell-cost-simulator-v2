@@ -400,12 +400,19 @@ with tab1:
 | # | Term | Definition |
 |---|---|---|
 | 1 | **Characters per minute (750 chars/min)** | ElevenLabs plans are priced in credits, where 1 credit = 1 character of text. This simulator estimates 750 chars/min of spoken audio, based on ~150 words/min × ~5 chars/word. Every minute your agent speaks consumes ~750 credits. |
-| 2 | **Overage calculation** | Triggered when monthly usage exceeds a plan's included credits. Formula: `(chars used − included credits) ÷ 1,000 × overage rate`. Rates: Creator $0.30/1k · Pro $0.24/1k · Scale $0.18/1k · Business $0.12/1k |
+| 2 | **Overage calculation** | Triggered when monthly usage exceeds a plan's included credits. Formula: `(chars used − included credits) ÷ 1,000 × overage rate`. |
 | 3 | **Retell infrastructure fee ($0.055/min)** | Retell's core platform charge billed per minute of active call time, regardless of TTS provider. Covers turn-taking model, orchestration, ASR transcription, and telephony. Applies on top of all TTS costs. Formula: `total minutes × $0.055` |
 | 4 | **Enterprise discount** | Applies to the Direct ElevenLabs path only — reduces both plan base cost and overage rate. Simulates a negotiated contract (the arrangement Retell held with ElevenLabs before March 23, 2026). Not available on Retell-bundled flat rates. |
 | 5 | **Direct ElevenLabs route (BYOK)** | Requires Retell to support bring-your-own-API-key. Confirm with Retell support before committing to a direct plan. |
 | 6 | **Usage stats — how they're calculated** | Minutes/month = calls/day × avg duration × agents × 30. Characters/month = minutes × 750. Calls/month = calls/day × agents × 30. Patients/month = entered in sidebar. Scheduled/month = patients × conversion rate. |
 | 7 | **Cost per scheduled patient** | Monthly total cost ÷ scheduled patients/month. Answers: *"What did it cost to get one patient onto the schedule?"* Useful for clinical/ops stakeholders focused on cost-per-outcome vs. cost-per-minute. |
+""")
+    st.markdown("""
+**Overage rates by plan** ($ per 1,000 characters over the included credit limit):
+- **Creator** — $0.30 / 1k chars
+- **Pro** — $0.24 / 1k chars
+- **Scale** — $0.18 / 1k chars
+- **Business** — $0.12 / 1k chars
 """)
 
 
