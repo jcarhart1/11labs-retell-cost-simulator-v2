@@ -309,21 +309,30 @@ with tab1:
     base_cpp      = pre_mar23_cost / total_patients_input
     base_cps      = pre_mar23_cost / scheduled_per_month if scheduled_per_month else 0
 
+    def pct(new_val, base_val):
+        if base_val == 0:
+            return "n/a"
+        return f"{((new_val - base_val) / base_val) * 100:+.1f}%"
+
     summary_rows = []
     for label, cost in all_scenarios:
         cpp = cost / total_patients_input
         cps = cost / scheduled_per_month if scheduled_per_month else 0
         is_baseline = label == "Retell + ElevenLabs (pre Mar 23)"
         summary_rows.append({
-            "Scenario":                  label,
-            "Monthly cost":              f"${cost:,.2f}",
-            "vs. pre Mar 23 (monthly)":  "baseline" if is_baseline else f"${cost - base_cost:+,.2f}",
-            "Annual cost":               f"${cost*12:,.2f}",
-            "vs. pre Mar 23 (annual)":   "baseline" if is_baseline else f"${(cost*12) - base_annual:+,.2f}",
-            "Cost per patient":          f"${cpp:,.2f}",
-            "vs. pre Mar 23 (per pt)":   "baseline" if is_baseline else f"${cpp - base_cpp:+,.2f}",
-            "Cost per scheduled":        f"${cps:,.2f}",
-            "vs. pre Mar 23 (per sched)":"baseline" if is_baseline else f"${cps - base_cps:+,.2f}",
+            "Scenario":                   label,
+            "Monthly cost":               f"${cost:,.2f}",
+            "Δ monthly ($)":              "baseline" if is_baseline else f"${cost - base_cost:+,.2f}",
+            "Δ monthly (%)":              "baseline" if is_baseline else pct(cost, base_cost),
+            "Annual cost":                f"${cost*12:,.2f}",
+            "Δ annual ($)":               "baseline" if is_baseline else f"${(cost*12) - base_annual:+,.2f}",
+            "Δ annual (%)":               "baseline" if is_baseline else pct(cost*12, base_annual),
+            "Cost per patient":           f"${cpp:,.2f}",
+            "Δ per patient ($)":          "baseline" if is_baseline else f"${cpp - base_cpp:+,.2f}",
+            "Δ per patient (%)":          "baseline" if is_baseline else pct(cpp, base_cpp),
+            "Cost per scheduled":         f"${cps:,.2f}",
+            "Δ per scheduled ($)":        "baseline" if is_baseline else f"${cps - base_cps:+,.2f}",
+            "Δ per scheduled (%)":        "baseline" if is_baseline else pct(cps, base_cps),
         })
     st.dataframe(pd.DataFrame(summary_rows), hide_index=True, use_container_width=True)
 
