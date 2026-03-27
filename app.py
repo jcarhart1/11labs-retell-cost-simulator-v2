@@ -408,7 +408,11 @@ with tab1:
         "Overage calculation: When monthly character usage exceeds a plan's included credits, "
         "overage is charged per 1,000 characters above the limit. Formula: "
         "(chars used - included credits) / 1,000 x overage rate. "
-        "Overage rates vary by plan: Creator $0.30/1k : Pro $0.24/1k : Scale $0.18/1k : Business $0.12/1k."
+        "Overage rates vary by plan: "
+        "Creator $0.30/1k "
+        "Pro $0.24/1k "
+        "Scale $0.18/1k "
+        "Business $0.12/1k "
     )
     st.caption(
         "Enterprise discount: Applied to both the plan base cost and overage rate on the "
@@ -428,7 +432,7 @@ with tab1:
         "pilot data: 36 patients scheduled out of 199)."
     )
     st.caption(
-        "Retell infrastructure fee ($0.055/min): This is Retell's core platform charge, "
+        "Retell infrastructure fee is $0.055/min. This is Retell's core platform charge, "
         "billed per minute of active call time regardless of which TTS provider you use. It covers "
         "Retell's turn-taking model, orchestration engine, transcription (ASR), and telephony "
         "infrastructure. It is separate from — and in addition to — any TTS cost (ElevenLabs, "
