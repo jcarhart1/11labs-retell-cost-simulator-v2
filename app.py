@@ -64,7 +64,7 @@ def compute_tts_costs(minutes, chars, enterprise_discount):
     """
     Returns costs for Retell + ElevenLabs, Retell + Alt TTS, and every
     direct ElevenLabs plan side by side. Enterprise discount applies to
-    all direct plans equally (base cost + overage). No discount is available
+    all direct plans equally (base cost + overage). To the best of my knowledge, no discount is available
     on Retell-bundled flat per-minute rates.
     """
     disc       = 1 - enterprise_discount / 100
@@ -129,12 +129,12 @@ with st.sidebar:
     st.caption(
         "Applies to all Direct ElevenLabs plans — reduces plan base cost "
         "and overage rate, simulating a negotiated contract. "
-        "No discount is available on Retell-bundled flat per-minute rates."
+        "To the best of my knowledge, no discount is available on Retell-bundled flat per-minute rates."
     )
     enterprise_discount = st.slider(
         "Direct ElevenLabs discount (%)", 0, 50, 0, step=5, format="%d%%",
         help="Retell previously held a contract tier with ElevenLabs before March 23. "
-             "This models what a similar negotiated rate could look like if you go direct."
+             "This models what a similar negotiated rate could look like if we go direct."
     )
 
     st.divider()
@@ -397,30 +397,30 @@ with tab1:
     st.divider()
     st.markdown("#### 📝 Methodology notes")
     st.caption(
-        "**Characters per minute (750 chars/min):** ElevenLabs plans are priced in credits, "
+        "Characters per minute (750 chars/min): ElevenLabs plans are priced in credits, "
         "where 1 credit = 1 character of text on standard models. To convert call minutes into "
         "characters, this simulator uses an estimate of 750 characters per minute of spoken audio. "
         "This is based on an average English speech rate of ~150 words per minute, multiplied by "
-        "an average of ~5 characters per word (150 x 5 = 750). So for every minute your agent "
+        "an average of ~5 characters per word (150 x 5 = 750). So for every minute our agent "
         "speaks, approximately 750 characters of text are processed to generate that audio."
     )
     st.caption(
-        "**Overage calculation:** When monthly character usage exceeds a plan's included credits, "
+        "Overage calculation: When monthly character usage exceeds a plan's included credits, "
         "overage is charged per 1,000 characters above the limit. Formula: "
         "(chars used - included credits) / 1,000 x overage rate. "
-        "Overage rates vary by plan: Creator $0.30/1k · Pro $0.24/1k · Scale $0.18/1k · Business $0.12/1k."
+        "Overage rates vary by plan: Creator $0.30/1k : Pro $0.24/1k : Scale $0.18/1k : Business $0.12/1k."
     )
     st.caption(
-        "**Enterprise discount:** Applied to both the plan base cost and overage rate on the "
+        "Enterprise discount: Applied to both the plan base cost and overage rate on the "
         "Direct ElevenLabs path. This simulates a negotiated contract rate — the same type of "
         "arrangement Retell previously held with ElevenLabs before March 23, 2026."
     )
     st.caption(
-        "**Direct ElevenLabs route** assumes Retell supports bring-your-own-API-key (BYOK) — "
+        "Direct ElevenLabs route assumes Retell supports bring-your-own-API-key (BYOK) - "
         "confirm with Retell support before committing to a direct plan."
     )
     st.caption(
-        "**Usage stats (top metrics row):** Minutes/month = calls per day x avg call duration x "
+        "Usage stats (top metrics row): Minutes/month = calls per day x avg call duration x "
         "active agents x 30 days. Characters/month = minutes/month x 750 chars/min. "
         "Calls/month = calls per day x active agents x 30 days. "
         "Patients/month is entered directly in the sidebar. "
@@ -428,15 +428,16 @@ with tab1:
         "pilot data: 36 patients scheduled out of 199)."
     )
     st.caption(
-        "**Retell infrastructure fee ($0.055/min):** This is Retell's core platform charge, "
+        "Retell infrastructure fee ($0.055/min): This is Retell's core platform charge, "
         "billed per minute of active call time regardless of which TTS provider you use. It covers "
         "Retell's turn-taking model, orchestration engine, transcription (ASR), and telephony "
         "infrastructure. It is separate from — and in addition to — any TTS cost (ElevenLabs, "
-        "Alt TTS, or a direct plan). Formula: total minutes/month x $0.055. For example, at "
-        "3,120 minutes/month: 3,120 x $0.055 = $171.60/month in Retell infra alone."
+        "Alt TTS, or a direct plan). "
+        "Formula: total minutes/month x $0.055."
+        "For example, at 3,120 minutes/month: 3,120 x $0.055 = $171.60/month in Retell infra alone."
     )
     st.caption(
-        "**Cost per scheduled patient:** Monthly total cost / scheduled patients per month. "
+        "Cost per scheduled patient: Monthly total cost / scheduled patients per month. "
         "Scheduled patients = total patients x scheduling conversion rate (default 18%, based on "
         "pilot data: 36 scheduled out of 199). This metric answers: 'What did it cost in TTS and "
         "infrastructure to get one patient onto the schedule?' — making it a practical benchmark "
